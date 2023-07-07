@@ -1,0 +1,26 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to top, hsl(184, 78%, 53%), #0a1a57);
+    background-color: #000000;
+    background-image: radial-gradient(
+            at 83% 67%,
+            rgb(0, 0, 0) 0,
+            transparent 58%
+        ),
+        radial-gradient(at 67% 20%, rgb(19, 7, 65) 0, transparent 59%),
+        radial-gradient(at 88% 35%, rgb(63, 10, 10) 0, transparent 50%),
+        radial-gradient(at 31% 91%, rgb(51, 5, 49) 0, transparent 52%),
+        radial-gradient(at 27% 71%, rgb(11, 26, 54) 0, transparent 49%),
+        radial-gradient(at 74% 89%, rgb(14, 97, 69) 0, transparent 51%),
+        radial-gradient(at 53% 75%, rgb(78, 9, 92) 0, transparent 45%);
+
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
