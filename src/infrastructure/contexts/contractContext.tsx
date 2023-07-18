@@ -6,72 +6,58 @@ import {
     quizContractAbi,
 } from "../contractUtils/contractUtils";
 
-// To use the funcion submit whitout errors
-type ContractType<T> = T & {
-    [key: string]: (...args: any[]) => Promise<any>;
+type QuizContractType = {
+    quizContract: ethers.Contract | undefined;
+    instanceContract: () => Promise<void>;
+    submitAnswers: SubmitFunction;
 };
 
-const QuizContractContext = createContext<
-    | {
-          quizContract: ContractType<{
-              submit: (
-                  surveyId: number,
-                  surveyAnswers: number[]
-              ) => Promise<void>;
-          }>;
+type SubmitFunction = (
+    surveyId: number,
+    surveyAnswers: number[]
+) => Promise<void>;
 
-          instanceContract: () => Promise<void>;
-
-          submitAnswers: (
-              surveyId: number,
-              surveyAnswers: number[]
-          ) => Promise<void>;
-      }
-    | undefined
->(undefined);
+const QuizContractContext = createContext<QuizContractType | undefined>(
+    undefined
+);
 
 function QuizContractContextProvider({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const [quizContract, setQuizContract] = useState<ContractType<{
-        submit: (surveyId: number, surveyAnswers: number[]) => Promise<void>;
-    }> | null>(null);
+    const [quizContract, setQuizContract] = useState<
+        ethers.Contract | undefined
+    >(undefined);
 
     const instanceContract = async () => {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
 
-        const quizContract: any = new ethers.Contract(
+        const quizContract = new ethers.Contract(
             quizContractAddress,
             quizContractAbi,
             signer
         );
 
         setQuizContract(quizContract);
-        // quizContract = quizContractInstance;
     };
 
-    const submitAnswers = async (
-        surveyId: number,
-        surveyAnswers: number[]
+    const submitAnswers: SubmitFunction = async (
+        surveyId,
+        surveyAnswers
     ): Promise<void> => {
         if (!quizContract) return;
 
         //To include the submit function in the type of the contract
-        const contractWithSubmitFunction = quizContract as ContractType<{
-            submit: (
-                surveyId: number,
-                surveyAnswers: number[]
-            ) => Promise<void>;
-        }>;
+        const contractWithSubmitFunction = quizContract as ethers.Contract & {
+            submit: SubmitFunction;
+        };
 
         // To avoid conflicts with how the numbers are sent and how the contract receives them
-        const surveyAnswersToUint = surveyAnswers.map((num) => {
-            const numToUint = num === -1 ? 0 : num;
-            return numToUint;
-        });
+        const surveyAnswersToUint = surveyAnswers.map((num) =>
+            num === -1 ? 0 : num
+        );
 
         await contractWithSubmitFunction.submit(surveyId, surveyAnswersToUint);
     };
@@ -80,18 +66,17 @@ function QuizContractContextProvider({
         instanceContract();
     }, []);
 
-    // if (quizContract) {
+    const value: QuizContractType = {
+        quizContract,
+        instanceContract,
+        submitAnswers,
+    };
+
     return (
-        <QuizContractContext.Provider
-            value={{
-                quizContract,
-                instanceContract,
-                submitAnswers,
-            }}>
+        <QuizContractContext.Provider value={value}>
             {children}
         </QuizContractContext.Provider>
     );
-    // }
 }
 
 const useQuizContractContext = () => {

@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect, useContext } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import { ethers } from "ethers";
 
 interface ContextType {
@@ -10,8 +10,6 @@ interface ContextType {
     setAccountBalance: React.Dispatch<React.SetStateAction<string>>;
     currentNetwork: string;
     setCurrentNetwork: React.Dispatch<React.SetStateAction<string>>;
-    btnConnectionText: string;
-    setBtnConnectionText: React.Dispatch<React.SetStateAction<string>>;
     init: () => Promise<void>;
     switchToGoerliNetwork: () => Promise<void>;
 }
@@ -23,14 +21,11 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
     const [currentAccount, setCurrentAccount] = useState<string>("");
     const [accountBalance, setAccountBalance] = useState<string>("");
     const [currentNetwork, setCurrentNetwork] = useState<string>("");
-    const [btnConnectionText, setBtnConnectionText] =
-        useState("Connect Wallet");
 
     const init = async () => {
         if (window.ethereum) {
             try {
                 const accountResult = await getAccount();
-                // Esto s para decirle a typescript que no continue si accountResult no es un string
                 if (!accountResult) return;
 
                 const accountBalanceResult = await getAccountBalance(
@@ -49,7 +44,6 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
                 }
             } catch (error) {
                 setErrorMessage(`Cant connect to Metamask: ${error}`);
-                console.log(`Cant connect to Metamask: ${error}`);
             }
         } else {
             setErrorMessage("Need to install MetaMask");
@@ -107,44 +101,36 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
         init();
     };
 
-    const accountsChangedHandler = () => {
-        init();
-    };
+    const accountsChangedHandler = () => init();
 
-    const chainChangedHandler = () => {
-        window.location.reload();
-    };
+    const chainChangedHandler = () => window.location.reload();
 
-    // Estar atento a los cambios de red o de address
     useEffect(() => {
-        // Connect automaticaly when is was alredy connectly manualed
         window.ethereum.on("accountsChanged", accountsChangedHandler);
         window.ethereum.on("chainChanged", chainChangedHandler);
     }, []);
 
+    const value: ContextType = {
+        errorMessage,
+        setErrorMessage,
+        currentAccount,
+        setCurrentAccount,
+        accountBalance,
+        setAccountBalance,
+        currentNetwork,
+        setCurrentNetwork,
+        init,
+        switchToGoerliNetwork,
+    };
+
     return (
-        <WalletContext.Provider
-            value={{
-                errorMessage,
-                setErrorMessage,
-                currentAccount,
-                setCurrentAccount,
-                accountBalance,
-                setAccountBalance,
-                currentNetwork,
-                setCurrentNetwork,
-                btnConnectionText,
-                setBtnConnectionText,
-                // connectWalletHandler,
-                init,
-                switchToGoerliNetwork,
-            }}>
+        <WalletContext.Provider value={value}>
             {children}
         </WalletContext.Provider>
     );
 }
 
-const useWalletContext = () => {
+const useWalletContext = (): ContextType => {
     const context = useContext(WalletContext);
 
     if (!context) {

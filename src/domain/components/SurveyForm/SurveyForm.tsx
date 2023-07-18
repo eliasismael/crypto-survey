@@ -62,10 +62,7 @@ function SurveyForm(props: Props): JSX.Element {
 
     // FUNCTIONS:
 
-    const handleOptionButtonClick = (
-        evt: React.MouseEvent<HTMLButtonElement>,
-        buttonID: string
-    ) => {
+    const handleOptionButtonClick = (buttonID: string) => {
         // To uncheck the other one that can be selected before
         setAllButtonsToUnpressed();
 
@@ -127,6 +124,7 @@ function SurveyForm(props: Props): JSX.Element {
         const answerID = pressedButton?.getAttribute("data-answerid");
         const result = answerID || -1;
 
+        console.log("se pushea: ", result);
         props.user.addAnswerID(result);
     };
 
@@ -169,6 +167,8 @@ function SurveyForm(props: Props): JSX.Element {
                     image={questions[currentQuestionIndex].image}
                     alt="Image"
                 />
+                {/* <img src={questions[currentQuestionIndex].image} /> */}
+
                 <CardContent>
                     <Typography color={"black"} sx={{ textAlign: "center" }}>
                         {questions[currentQuestionIndex].text}
@@ -198,7 +198,7 @@ function SurveyForm(props: Props): JSX.Element {
                     color={
                         buttonsState.button1.pressed ? "secondary" : "primary"
                     }
-                    onClick={(evt) => handleOptionButtonClick(evt, "button1")}
+                    onClick={() => handleOptionButtonClick("button1")}
                     data-answerid={
                         questions[currentQuestionIndex].options[0].id
                     }
@@ -212,7 +212,7 @@ function SurveyForm(props: Props): JSX.Element {
                     color={
                         buttonsState.button2.pressed ? "secondary" : "primary"
                     }
-                    onClick={(evt) => handleOptionButtonClick(evt, "button2")}
+                    onClick={() => handleOptionButtonClick("button2")}
                     data-answerid={
                         questions[currentQuestionIndex].options[1].id
                     }
@@ -226,7 +226,7 @@ function SurveyForm(props: Props): JSX.Element {
                     color={
                         buttonsState.button3.pressed ? "secondary" : "primary"
                     }
-                    onClick={(evt) => handleOptionButtonClick(evt, "button3")}
+                    onClick={() => handleOptionButtonClick("button3")}
                     data-answerid={
                         questions[currentQuestionIndex].options[2].id
                     }

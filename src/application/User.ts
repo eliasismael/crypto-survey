@@ -17,8 +17,8 @@ export class User {
 }
 
 export type UserType = {
-    addAnswerID: () => void;
-    seeAnswersID: () => void;
+    addAnswerID: (arg: number) => void;
+    seeAnswersID: () => number[];
 };
 
 export const getUserInstance = (currentAccount: string) => {

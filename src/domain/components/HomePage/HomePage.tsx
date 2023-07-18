@@ -1,20 +1,22 @@
-import { useWalletContext } from "../../../infrastructure/contexts/walletConnectionContext";
-import { Button, Container, Typography, Grid } from "@mui/material";
-import { Link } from "react-router-dom";
-import { surveyData } from "../../../infrastructure/api/apiConsumer";
 import { useState, useEffect } from "react";
 
-function HomePage() {
+import { Button, Container, Typography, Grid } from "@mui/material";
+import { Link } from "react-router-dom";
+
+import { surveyData } from "../../../infrastructure/api/apiConsumer";
+import { useWalletContext } from "../../../infrastructure/contexts/walletConnectionContext";
+
+function HomePage(): JSX.Element {
     const { currentAccount, currentNetwork, init, switchToGoerliNetwork } =
         useWalletContext();
 
     const [formatedAccount, setFormatedAccount] = useState("");
 
-    const formatAccount = (inputString: string) => {
-        const firstFour = inputString.slice(0, 4);
-        const lastFour = inputString.slice(-4);
+    const formatAccount = (account: string) => {
+        const firstFour = account.slice(0, 4);
+        const lastFour = account.slice(-4);
 
-        return `${firstFour}...${lastFour}`;
+        return account ? `${firstFour}...${lastFour}` : "";
     };
 
     useEffect(() => {

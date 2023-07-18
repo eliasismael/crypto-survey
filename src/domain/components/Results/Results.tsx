@@ -10,16 +10,16 @@ import { Button, Box, Typography } from "@mui/material";
 
 // Data from API
 import { questions, surveyData } from "../../../infrastructure/api/apiConsumer";
+import { UserType } from "../../../application/User";
 
-type Props = { user: { seeAnswersID: () => string[] | number[] } };
+type PropsType = { user: UserType };
 
-function Results(props: Props): JSX.Element {
+function Results(props: PropsType): JSX.Element {
     const { currentAccount } = useWalletContext();
     const { submitAnswers } = useQuizContractContext();
 
     const [resultsSubmited, setResultsSubmited] = useState(false);
     const [answers, setAnswers] = useState<Array<string>>([]);
-
     const [answersID, setAnswersID] = useState<Array<number>>([]);
 
     const handleAnswersSubmit = async () => {
@@ -32,20 +32,27 @@ function Results(props: Props): JSX.Element {
         }
     };
 
-    useEffect(() => {
-        const strAnswersID = props.user.seeAnswersID();
-        const numAnswersID = strAnswersID.map(Number);
+    // const convertAnswersID = (): number[] => {
+    //     const strAnswersID: string[] = props.user.seeAnswersID();
+    //     const numAnswersID: number[] = strAnswersID.map(Number);
+    //     return numAnswersID;
+    // };
 
-        const updatedAnswers = numAnswersID.map((answerID, i) => {
+    useEffect(() => {
+        // const answersID: number[] = convertAnswersID();
+        const answersID: number[] = props.user.seeAnswersID();
+
+        const updatedAnswers = answersID.map((answerID, i) => {
             const option = questions[i].options.find(
-                (option) => option.id === answerID
+                (option) => option.id == answerID // "==" instead of "===" to avoid conflicts string/number
             );
 
             const answer = option ? option.text : "Not answered";
             return answer;
         });
+        console.log("useEffect UPDATEDanswers: ", updatedAnswers);
 
-        setAnswersID(numAnswersID);
+        setAnswersID(answersID);
         setAnswers(updatedAnswers);
     }, [props.user]);
 
