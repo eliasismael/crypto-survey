@@ -1,0 +1,48 @@
+.Results__main-container {
+    /* background-color: "none", */
+    padding: "2em";
+    border-radius: "4px";
+}
+
+.Results__title {
+    margin-bottom: 20px;
+    text-align: center;
+    color: white;
+}
+
+/* Main content */
+
+.Results__answers-container {
+    margin-bottom: 20px;
+}
+
+.Results__answer-container__question-text {
+    text-shadow: -2px 2px 2px black;
+}
+
+.Results__answer-container__question-span {
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+.Results__answer-container__answer-text {
+    color: white;
+    font-weight: 300;
+}
+
+.Results__answer-container__answer-span {
+    display: inline;
+    margin-right: 8px;
+}
+
+/* Buttom */
+
+.Results__bottom__container {
+    display: grid;
+    place-items: center;
+}
+
+.Results__bottom__button-submit {
+    margin-top: 20px;
+    text-align: center;
+}

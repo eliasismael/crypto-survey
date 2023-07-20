@@ -1,10 +1,19 @@
+// Hooks
 import { useState, useEffect } from "react";
 
+// Libraries
 import { Button, Container, Typography, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
-import { surveyData } from "../../../infrastructure/api/apiConsumer";
-import { useWalletContext } from "../../../infrastructure/contexts/walletConnectionContext";
+// Data
+import { surveyData } from "../../infrastructure/api/apiConsumer";
+import { useWalletContext } from "../../infrastructure/contexts/wallet/walletConnectionContext";
+
+// Functions
+import { formatAccount } from "../../application/helpers/formatAccount";
+
+// Styles
+import "../styles/HomePage.css";
 
 function HomePage(): JSX.Element {
     const { currentAccount, currentNetwork, init, switchToGoerliNetwork } =
@@ -12,79 +21,48 @@ function HomePage(): JSX.Element {
 
     const [formatedAccount, setFormatedAccount] = useState("");
 
-    const formatAccount = (account: string) => {
-        const firstFour = account.slice(0, 4);
-        const lastFour = account.slice(-4);
-
-        return account ? `${firstFour}...${lastFour}` : "";
-    };
-
     useEffect(() => {
         const formatedAccount = formatAccount(currentAccount);
         setFormatedAccount(formatedAccount);
     }, [currentAccount]);
 
     return (
-        <Container
-            sx={{
-                padding: "16px",
-            }}>
+        <Container className="HomePage__main-container">
             <Grid
                 container
                 spacing={2}
                 flexDirection={"column"}
                 alignItems={"center"}>
                 <Grid item xs={12}>
-                    <Typography
-                        variant="h4"
-                        component="h1"
-                        sx={{
-                            marginBottom: 1,
-                            color: "#fff",
-                            textShadow: "0 0 10px rgb(255,255,255,0.3)",
-                        }}>
+                    {/* TITLE */}
+                    <Typography className="HomePage__title" variant="h4">
                         Crypto Survey!
                     </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                    <Typography
-                        variant="body1"
-                        sx={{
-                            color: "white",
-                            textShadow: "0 0 8px rgb(255,255,255,0.2)",
 
-                            textAlign: "center",
-                        }}>
+                {/* TEXT */}
+                <Grid item xs={12} sm={6}>
+                    <Typography className="HomePage__text" variant="body2">
                         We are interested in knowing your knowledge about the
                         crypto world
-                    </Typography>
-                    <br />
-                    <Typography
-                        variant="body2"
-                        sx={{
-                            color: "#fff",
-                            textShadow: "0 0 8px rgb(255,255,255,0.2)",
-                            textAlign: "center",
-                        }}>
+                        <br />
+                        <br />
                         You will be rewarded with a QUIZ token, just make sure
                         you are on the goerli network
                     </Typography>
                 </Grid>
+
+                {/* IMG */}
                 <Grid item xs={12} sm={6}>
                     {surveyData && (
-                        <img
-                            src={surveyData.image}
-                            height={200}
-                            style={{ borderRadius: "30px" }}
-                        />
+                        <img className="HomePage__img" src={surveyData.image} />
                     )}
                 </Grid>
 
-                <Grid
-                    item
-                    xs={12}
-                    sm={6}
-                    style={{ marginTop: "16px", textAlign: "center" }}>
+                {/* BUTTONS */}
+
+                {/* Start */}
+                <Grid className="HomePage__bottom" item xs={12} sm={6}>
                     <Link
                         to={
                             currentAccount && currentNetwork === "goerli"
@@ -92,12 +70,9 @@ function HomePage(): JSX.Element {
                                 : "#"
                         }>
                         <Button
+                            className="HomePage__bottom__start-button"
                             variant="outlined"
                             color="primary"
-                            style={{
-                                margin: "6px",
-                                backgroundColor: "#212121",
-                            }}
                             disabled={
                                 currentAccount && currentNetwork === "goerli"
                                     ? false
@@ -107,45 +82,35 @@ function HomePage(): JSX.Element {
                         </Button>
                     </Link>
 
+                    {/* Connect */}
                     {!currentAccount && (
                         <Button
+                            className="HomePage__bottom__connect-button"
                             onClick={init}
                             disabled={currentAccount ? true : false}
-                            variant="contained"
-                            color="primary"
-                            style={{
-                                margin: "8px",
-                                backgroundColor: "#212121",
-                                color: "#fff",
-                            }}>
+                            variant="outlined"
+                            color="primary">
                             Connect Metamask
                         </Button>
                     )}
 
+                    {/* Switch */}
                     {currentAccount && currentNetwork !== "goerli" ? (
                         <Button
-                            variant="contained"
+                            className="HomePage__bottom__switch-button"
+                            variant="outlined"
                             color="primary"
-                            style={{
-                                // marginLeft: "8px",
-                                backgroundColor: "#212121",
-                                color: "#fff",
-                            }}
                             onClick={switchToGoerliNetwork}>
                             Switch to Goerli network
                         </Button>
                     ) : null}
 
-                    <br />
-                    <br />
-
+                    {/* Current account */}
                     <Typography
                         variant="body1"
                         color={"white"}
                         sx={{
-                            position: "relative",
-                            top: "10%",
-                            left: "2%",
+                            marginTop: "20px",
                         }}>
                         Account: {formatedAccount}
                     </Typography>

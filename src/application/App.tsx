@@ -1,13 +1,13 @@
-import "./App.css";
+import "../pages/styles/App.css";
 
-import HomePage from "../domain/components/HomePage/HomePage";
-import SurveyForm from "../domain/components/SurveyForm/SurveyForm";
-import Results from "../domain/components/Results/Results";
+import HomePage from "../pages/HomePage/HomePage";
+import SurveyForm from "../pages/SurveyForm/SurveyForm";
+import Results from "../pages/Results/Results";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { useWalletContext } from "../infrastructure/contexts/walletConnectionContext";
-import { getUserInstance } from "./User";
+import { useWalletContext } from "../infrastructure/contexts/wallet/walletConnectionContext";
+import { getUserInstance } from "./use-cases/User/getInstance";
 
 function App(): JSX.Element {
     // To use the same user instance to all the components

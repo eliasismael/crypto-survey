@@ -1,23 +1,11 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { ethers } from "ethers";
 
-interface ContextType {
-    errorMessage: string;
-    setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
-    currentAccount: string;
-    setCurrentAccount: React.Dispatch<React.SetStateAction<string>>;
-    accountBalance: string;
-    setAccountBalance: React.Dispatch<React.SetStateAction<string>>;
-    currentNetwork: string;
-    setCurrentNetwork: React.Dispatch<React.SetStateAction<string>>;
-    init: () => Promise<void>;
-    switchToGoerliNetwork: () => Promise<void>;
-}
+import { WalletContextModel } from "../../../domain/entities/wallet";
 
-const WalletContext = createContext<ContextType | undefined>(undefined);
+const WalletContext = createContext<WalletContextModel | undefined>(undefined);
 
 function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
-    const [errorMessage, setErrorMessage] = useState("");
     const [currentAccount, setCurrentAccount] = useState<string>("");
     const [accountBalance, setAccountBalance] = useState<string>("");
     const [currentNetwork, setCurrentNetwork] = useState<string>("");
@@ -43,10 +31,10 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
                     setCurrentNetwork(networkResult);
                 }
             } catch (error) {
-                setErrorMessage(`Cant connect to Metamask: ${error}`);
+                console.error(`Cant connect to Metamask: ${error}`);
             }
         } else {
-            setErrorMessage("Need to install MetaMask");
+            console.error("Need to install MetaMask");
         }
     };
 
@@ -58,7 +46,7 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
             const currentAccount: string = accounts[0].toString();
             return currentAccount;
         } catch (error: any) {
-            setErrorMessage(error.message);
+            console.error(error.message);
         }
     };
 
@@ -73,7 +61,7 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
             const balanceToEthers = ethers.formatEther(balance);
             return balanceToEthers;
         } catch (error: any) {
-            setErrorMessage(error.message);
+            console.error(error.message);
         }
     };
 
@@ -84,7 +72,7 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
             const currentNetworkName = currentNetwork.name;
             return currentNetworkName;
         } catch (error: any) {
-            console.log(error);
+            console.error(error);
         }
     };
 
@@ -95,14 +83,13 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
                 params: [{ chainId: "0x5" }],
             });
         } catch (error) {
-            console.log("No se pudo cambiar a goerli: ", error);
+            console.error("Can't switch to goerli: ", error);
         }
 
         init();
     };
 
     const accountsChangedHandler = () => init();
-
     const chainChangedHandler = () => window.location.reload();
 
     useEffect(() => {
@@ -110,9 +97,7 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
         window.ethereum.on("chainChanged", chainChangedHandler);
     }, []);
 
-    const value: ContextType = {
-        errorMessage,
-        setErrorMessage,
+    const value: WalletContextModel = {
         currentAccount,
         setCurrentAccount,
         accountBalance,
@@ -130,7 +115,7 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
-const useWalletContext = (): ContextType => {
+const useWalletContext = (): WalletContextModel => {
     const context = useContext(WalletContext);
 
     if (!context) {

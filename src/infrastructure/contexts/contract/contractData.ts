@@ -1,5 +1,5 @@
-export const quizContractAddress = "0x437eF217203452317C3C955Cf282b1eE5F6aaF72";
-export const quizContractAbi = [
+export const contractAddress = "0x437eF217203452317C3C955Cf282b1eE5F6aaF72";
+export const contractAbi = [
     {
         inputs: [
             {

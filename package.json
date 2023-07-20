@@ -16,8 +16,6 @@
         "@mui/material": "^5.13.6",
         "axios": "^1.4.0",
         "ethers": "^6.6.2",
-        "firebase": "^10.0.0",
-        "json-server": "^0.17.3",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.14.1"
@@ -29,6 +27,7 @@
         "@typescript-eslint/parser": "^5.59.0",
         "@vitejs/plugin-react": "^4.0.0",
         "eslint": "^8.38.0",
+        "eslint-plugin-hexagonal-architecture": "^1.0.3",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-react-refresh": "^0.3.4",
         "typescript": "^5.0.2",
