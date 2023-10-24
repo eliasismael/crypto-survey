@@ -1,11 +1,5 @@
-import {
-    User,
-    UserModel,
-    GetUserInstanceType,
-} from "../../../domain/entities/User";
+import { User, IUser } from "../../../domain/models/User";
 
-export const getUserInstance: GetUserInstanceType = (
-    currentAccount: string
-): UserModel => {
+export const getUserInstance = (currentAccount: string): IUser => {
     return new User(currentAccount);
 };

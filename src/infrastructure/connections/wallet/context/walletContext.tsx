@@ -1,35 +1,34 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { ethers } from "ethers";
 
-import { WalletContextModel } from "../../../domain/entities/wallet";
+import { IWalletContext } from "../../../../domain/models/wallet";
 
-const WalletContext = createContext<WalletContextModel | undefined>(undefined);
+interface WalletContextProps {
+    children: React.ReactNode;
+}
 
-function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
-    const [currentAccount, setCurrentAccount] = useState<string>("");
-    const [accountBalance, setAccountBalance] = useState<string>("");
-    const [currentNetwork, setCurrentNetwork] = useState<string>("");
+const WalletContext = createContext<IWalletContext | undefined>(undefined);
+
+function WalletContextProvider(props: WalletContextProps) {
+    const { children } = props;
+
+    const [currentAccount, setCurrentAccount] = useState("");
+    const [accountBalance, setAccountBalance] = useState("");
+    const [currentNetwork, setCurrentNetwork] = useState("");
 
     const init = async () => {
         if (window.ethereum) {
             try {
-                const accountResult = await getAccount();
-                if (!accountResult) return;
+                const account = await getAccount();
+                if (!account) return;
 
-                const accountBalanceResult = await getAccountBalance(
-                    accountResult
-                );
-                const networkResult = await getCurrentNetwork();
+                const balance = await getAccountBalance(account);
+                const network = await getCurrentNetwork();
 
-                setCurrentAccount(accountResult);
+                setCurrentAccount(account);
 
-                if (accountBalanceResult) {
-                    setAccountBalance(accountBalanceResult);
-                }
-
-                if (networkResult) {
-                    setCurrentNetwork(networkResult);
-                }
+                if (balance) setAccountBalance(balance);
+                if (network) setCurrentNetwork(network);
             } catch (error) {
                 console.error(`Cant connect to Metamask: ${error}`);
             }
@@ -38,40 +37,37 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const getAccount = async (): Promise<string | undefined> => {
+    const getAccount = async () => {
         try {
             const accounts: string[] = await window.ethereum.request({
                 method: "eth_requestAccounts",
             });
-            const currentAccount: string = accounts[0].toString();
+            const currentAccount = accounts[0].toString();
             return currentAccount;
-        } catch (error: any) {
-            console.error(error.message);
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    const getAccountBalance = async (
-        currentAccount: string
-    ): Promise<string | undefined> => {
+    const getAccountBalance = async (account: string) => {
         try {
             const balance = await window.ethereum.request({
                 method: "eth_getBalance",
-                params: [currentAccount, "latest"],
+                params: [account, "latest"],
             });
             const balanceToEthers = ethers.formatEther(balance);
             return balanceToEthers;
-        } catch (error: any) {
-            console.error(error.message);
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    const getCurrentNetwork = async (): Promise<string | undefined> => {
+    const getCurrentNetwork = async () => {
         try {
             const provider = new ethers.BrowserProvider(window.ethereum);
-            const currentNetwork = await provider.getNetwork();
-            const currentNetworkName = currentNetwork.name;
-            return currentNetworkName;
-        } catch (error: any) {
+            const { name } = await provider.getNetwork();
+            return name;
+        } catch (error) {
             console.error(error);
         }
     };
@@ -95,9 +91,14 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         window.ethereum.on("accountsChanged", accountsChangedHandler);
         window.ethereum.on("chainChanged", chainChangedHandler);
+
+        return () => {
+            window.ethereum.on("accountsChanged", () => {});
+            window.ethereum.on("chainChanged", () => {});
+        };
     }, []);
 
-    const value: WalletContextModel = {
+    const value = {
         currentAccount,
         setCurrentAccount,
         accountBalance,
@@ -115,7 +116,7 @@ function WalletConnectionProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
-const useWalletContext = (): WalletContextModel => {
+const useWalletContext = (): IWalletContext => {
     const context = useContext(WalletContext);
 
     if (!context) {
@@ -127,4 +128,8 @@ const useWalletContext = (): WalletContextModel => {
     return context;
 };
 
-export { WalletContext, WalletConnectionProvider, useWalletContext };
+export {
+    WalletContext,
+    WalletContextProvider as WalletConnectionProvider,
+    useWalletContext,
+};

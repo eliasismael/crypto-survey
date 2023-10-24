@@ -1,8 +1,8 @@
-import { UserModel } from "../../../domain/entities/User";
-import { ButtonsRef } from "../../../domain/entities/Buttons";
+import { IUser } from "../../../domain/models/User";
+import { ButtonsRef } from "../../../domain/models/Buttons";
 
 export const registerAnswerID = (
-    userInstance: UserModel,
+    userInstance: IUser,
     buttonsRefs: React.MutableRefObject<ButtonsRef>
 ): void => {
     const buttonElements: HTMLButtonElement[] = Object.values(

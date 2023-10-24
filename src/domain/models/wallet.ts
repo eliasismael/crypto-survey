@@ -1,4 +1,4 @@
-export interface WalletContextModel {
+export interface IWalletContext {
     currentAccount: string;
     setCurrentAccount: React.Dispatch<React.SetStateAction<string>>;
     accountBalance: string;

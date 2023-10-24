@@ -1,11 +1,11 @@
-export interface UserModel {
+export interface IUser {
     address: string;
     answersID: Array<number>;
     addAnswerID(answerID: number): void;
     seeAnswersID(): Array<number>;
 }
 
-export class User implements UserModel {
+export class User implements IUser {
     address: string;
     answersID: number[];
 
@@ -22,7 +22,3 @@ export class User implements UserModel {
         return this.answersID;
     }
 }
-
-export type GetUserInstanceType = {
-    (currentAccount: string): UserModel;
-};

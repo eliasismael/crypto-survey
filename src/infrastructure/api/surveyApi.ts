@@ -1,7 +1,13 @@
 import axios from "axios";
-import { dbLocation } from "../db/location";
+import { DB_LOCATION } from "../database/location";
+import { SurveyData, Question } from "./types";
 
 export const getSurvey = async () => {
-    const res = await axios.get(dbLocation);
-    return res.data;
+    const response = await axios.get(DB_LOCATION);
+    return response.data;
 };
+
+// export const survey = await getSurvey();
+// export const surveyData: SurveyData = survey.data.survey;
+
+// export const questions: Question[] = surveyData.questions;

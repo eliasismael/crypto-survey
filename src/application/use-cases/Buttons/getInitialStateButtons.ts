@@ -1,4 +1,4 @@
-import { ButtonsState, GetButtons } from "../../../domain/entities/Buttons";
+import { ButtonsState, GetButtons } from "../../../domain/models/Buttons";
 
 const getInitialStateButtons: GetButtons = (): ButtonsState => {
     return {

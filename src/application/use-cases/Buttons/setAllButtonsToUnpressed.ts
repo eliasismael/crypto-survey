@@ -1,4 +1,4 @@
-import { ButtonsState } from "../../../domain/entities/Buttons";
+import { ButtonsState } from "../../../domain/models/Buttons";
 
 export const setAllButtonsToUnpressed = (
     setter: React.Dispatch<React.SetStateAction<ButtonsState>>

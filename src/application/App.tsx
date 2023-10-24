@@ -1,12 +1,12 @@
-import "../pages/styles/App.css";
+import "../App.css";
 
-import HomePage from "../pages/HomePage/HomePage";
-import SurveyForm from "../pages/SurveyForm/SurveyForm";
-import Results from "../pages/Results/Results";
+import HomePage from "../pages/HomePage/page/HomePage";
+import SurveyForm from "../pages/SurveyForm/page/SurveyForm";
+import Results from "../pages/Results/page/Results";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { useWalletContext } from "../infrastructure/contexts/wallet/walletConnectionContext";
+import { useWalletContext } from "../infrastructure/connections/wallet/context/walletContext";
 import { getUserInstance } from "./use-cases/User/getInstance";
 
 function App(): JSX.Element {

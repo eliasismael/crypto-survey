@@ -1,11 +1,11 @@
-export type ButtonState = {
+export interface ButtonState {
     pressed: boolean;
     answerID: number;
-};
+}
 
-export type ButtonsState = {
+export interface ButtonsState {
     [key: string]: ButtonState;
-};
+}
 
 export interface ButtonsRef {
     button1: null | HTMLButtonElement;
