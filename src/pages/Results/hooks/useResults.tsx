@@ -51,7 +51,7 @@ export const useResults = (user: IUser) => {
 
     setAnswersID(answersID);
     setAnswers(answersSelected);
-  }, []);
+  }, [questions]);
 
   return { currentAccount, resultsSubmitted, answers, handleAnswersSubmit };
 };

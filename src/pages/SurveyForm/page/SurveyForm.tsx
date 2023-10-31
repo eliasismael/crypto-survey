@@ -1,7 +1,7 @@
 // Hooks
-import React, { useState, useRef, useEffect } from "react";
+import { useSurveyForm } from "../hooks/useSurveyForm";
 import { useSubstractTime } from "../hooks/useSubstractTime";
-// Library
+// UI
 import {
   Box,
   Typography,
@@ -10,45 +10,29 @@ import {
   CardMedia,
   CardContent,
 } from "@mui/material";
+// Router
 import { Link } from "react-router-dom";
 // Data from API
 import { questions } from "../../../infrastructure/api/apiConsumer";
-// Functions
-import { registerAnswerID } from "../../../application/functions/Buttons/registerAnswerID";
-import { setAllButtonsToUnpressed } from "../../../application/functions/Buttons/setAllButtonsToUnpressed";
-// Types and instances
-import { ButtonRefs } from "../../../domain/models/Buttons";
-// import { buttons } from "../../../application/functions/Buttons/getInitialStateButtons";
-// Type for props
+// Models
 import { IUser } from "../../../domain/models/User";
-// Helpers
-import { getIndex } from "../../../application/helpers/getIndex";
-import { createButtons } from "../../../application/functions/Buttons/createButtons";
-
-import { getButtonsRefs } from "../../../application/functions/Buttons/getButtonsRefs";
+// Components
+import { OptionButton } from "../components/OptionButton";
 
 interface SurveyFormProps {
   user: IUser;
 }
 
 const SurveyForm: React.FC<SurveyFormProps> = (props) => {
-  const { user } = props;
+  const {
+    currentQuestion,
+    seeResultsAvailable,
+    buttons,
+    buttonRefs,
+    onSelectOptionHandler,
+    onSubmitHandler,
+  } = useSurveyForm(props.user);
 
-  const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
-  const [seeResultsAvailable, setSeeResultsAvaiable] = useState(false);
-
-  const [buttons, setButtons] = useState(() => createButtons(3));
-
-  // To determine which one was pressed
-  // const buttonsRefs = useRef<ButtonsRef>({
-  //   button1: null,
-  //   button2: null,
-  //   button3: null,
-  // });
-
-  const buttonsRefs = useRef<ButtonRefs>(getButtonsRefs(buttons));
-
-  // useSubstractTime
   const timeLeft = useSubstractTime(
     currentQuestion.lifetimeSeconds,
     1000,
@@ -56,47 +40,6 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
     [currentQuestion]
   );
 
-  const handleOptionButtonClick = (
-    buttonID: string,
-    answerid: string | number
-  ) => {
-    console.log(buttonID);
-    console.log(answerid);
-    // To uncheck the other one that can be selected before
-    setAllButtonsToUnpressed(setButtons);
-
-    // Mark the button as pressed
-    setButtons((prevState) => ({
-      ...prevState,
-      [buttonID]: {
-        ...prevState[buttonID as keyof typeof buttons],
-        pressed: true,
-      },
-    }));
-  };
-
-  // When going to the next question
-  const onSubmitHandler = (evt?: React.FormEvent<HTMLFormElement>) => {
-    /* The event may not exist because responses are sent
-         automatically when the time is up if the user doesn't */
-    evt?.preventDefault();
-
-    setAllButtonsToUnpressed(setButtons);
-    registerAnswerID(user, buttonsRefs);
-
-    const isLastQuestions =
-      getIndex(questions, currentQuestion) === questions.length - 1;
-
-    if (isLastQuestions) {
-      setSeeResultsAvaiable(true);
-    } else {
-      const currentIndex = getIndex(questions, currentQuestion);
-      const newQuestion = questions[currentIndex + 1];
-      setCurrentQuestion(newQuestion);
-    }
-  };
-
-  useEffect(() => console.log(buttons), []);
   return (
     <Box
       sx={{
@@ -108,8 +51,7 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
       }}
     >
       <Typography color={"white"} sx={{ marginBottom: 4 }}>
-        Question {getIndex(questions, currentQuestion) + 1} of{" "}
-        {questions.length}
+        Question {questions.indexOf(currentQuestion) + 1} of {questions.length}
       </Typography>
 
       {/* IMG */}
@@ -150,25 +92,22 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
         onSubmit={(evt) => onSubmitHandler(evt)}
       >
         {/* Render buttons*/}
-        {currentQuestion.options.map((option, index) => (
-          <Button
-            key={option.id}
-            variant="outlined"
-            color={
-              buttons[`button${index + 1}`].pressed ? "secondary" : "primary"
-            }
-            onClick={() =>
-              handleOptionButtonClick(`button${index + 1}`, option.id)
-            }
-            data-answerid={option.id}
-            ref={(button) => {
-              const buttonId = `button${index + 1}`;
-              return (buttonsRefs.current[buttonId] = button);
-            }}
-          >
-            {option.text}
-          </Button>
-        ))}
+        {currentQuestion.options.map((option, index) => {
+          const currentButton = `button${index + 1}`;
+
+          return (
+            <OptionButton
+              key={option.id}
+              content={option.text}
+              color={buttons[currentButton].pressed ? "secondary" : "primary"}
+              onClickHandler={() => onSelectOptionHandler(currentButton)}
+              dataAnswerId={option.id}
+              buttonRef={(button) =>
+                (buttonRefs.current[currentButton] = button)
+              }
+            />
+          );
+        })}
 
         <Button type="submit" disabled={seeResultsAvailable}>
           Continue

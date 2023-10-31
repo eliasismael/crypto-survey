@@ -1,119 +1,67 @@
-// import { useState, useRef, useEffect } from "react";
-// import { Buttons } from "../../../domain/models/Buttons";
-// import { ButtonsRef } from "../../../domain/models/Buttons";
-// import { setAllButtonsToUnpressed } from "../../../application/use-cases/Buttons/setAllButtonsToUnpressed";
-// import { questions } from "../../../infrastructure/api/apiConsumer";
-// import { buttons } from "../../../application/use-cases/Buttons/getInitialStateButtons";
-// import { registerAnswerID } from "../../../application/use-cases/Buttons/registerAnswerID";
-// // import { useSubstractTime } from "./useSubstractTime";
-// import { IUser } from "../../../domain/models/User";
-// import { getIndex } from "../../../application/helpers/getIndex";
+// Hooks
+import { useState, useRef } from "react";
+// Models
+import { ButtonRefs } from "../../../domain/models/Buttons";
 
-// export const useSurveyForm = ({ user }: { user: IUser }) => {
-//   const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
-//   const [currentOptions, setCurrentOptions] = useState();
+// Data
+import { questions } from "../../../infrastructure/api/apiConsumer";
+// Functions
+import { createButtons } from "../../../application/functions/Buttons/createButtons";
+import { getButtonsRefs } from "../../../application/functions/Buttons/getButtonsRefs";
+import { setAllButtonsToUnpressed } from "../../../application/functions/Buttons/setAllButtonsToUnpressed";
+import { registerAnswerID } from "../../../application/functions/Buttons/registerAnswerID";
+import { IUser } from "../../../domain/models/User";
 
-//   const [timeLeft, setTimeLeft] = useState(0);
-//   const [isIntervalActive, setIsIntervalActive] = useState(true);
-//   const [seeResultsAvailable, setSeeResultsAvaiable] = useState(false);
+export const useSurveyForm = (user: IUser) => {
+  const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
+  const [seeResultsAvailable, setSeeResultsAvaiable] = useState(false);
 
-//   // Button state (pressed and what response it contains)
-//   const [buttonsState, setButtonsState] = useState<Buttons>(buttons);
+  const [buttons, setButtons] = useState(() => createButtons(3));
+  const buttonRefs = useRef<ButtonRefs>(getButtonsRefs(buttons));
 
-//   // To determine which one was pressed
-//   const buttonsRefs = useRef<ButtonsRef>({
-//     button1: null,
-//     button2: null,
-//     button3: null,
-//   });
+  const onSelectOptionHandler = (buttonID: string) => {
+    // To uncheck the other one that can be selected before
+    setAllButtonsToUnpressed(setButtons);
 
-//   const handleOptionButtonClick = (buttonID: string) => {
-//     // To uncheck the other one that can be selected before
-//     setAllButtonsToUnpressed(setButtonsState);
+    // Mark the button as pressed
+    setButtons((prevState) => ({
+      ...prevState,
+      [buttonID]: {
+        ...prevState[buttonID],
+        pressed: true,
+      },
+    }));
+  };
 
-//     // Mark the button as pressed
-//     setButtonsState((prevState) => ({
-//       ...prevState,
-//       [buttonID]: {
-//         ...prevState[buttonID as keyof typeof buttonsState],
-//         pressed: true,
-//       },
-//     }));
-//   };
+  // When going to the next question
+  const onSubmitHandler = (evt?: React.FormEvent<HTMLFormElement>) => {
+    /* The event may not exist because responses are sent 
+  automatically when the time is up if the user doesn't */
+    evt?.preventDefault();
 
-//   // When going to the next question
-//   const onSubmitHandler = (evt?: React.FormEvent<HTMLFormElement>) => {
-//     /* The event may not exist because responses are sent
-//          automatically when the time is up if the user doesn't */
-//     evt?.preventDefault();
+    setAllButtonsToUnpressed(setButtons);
+    registerAnswerID(user, buttonRefs);
 
-//     setAllButtonsToUnpressed(setButtonsState);
-//     registerAnswerID(user, buttonsRefs);
+    const isLastQuestions =
+      questions.indexOf(currentQuestion) === questions.length - 1;
 
-//     const isLastQuestions =
-//       getIndex(questions, currentQuestion) === questions.length - 1;
+    if (isLastQuestions) {
+      setSeeResultsAvaiable(true);
+      return;
+    }
 
-//     if (isLastQuestions) {
-//       setIsIntervalActive(false);
-//       setSeeResultsAvaiable(true);
-//     } else {
-//       const currentQuestionIndex = getIndex(questions, currentQuestion);
-//       const nextQuestion = questions[currentQuestionIndex + 1];
-//       setCurrentQuestion(nextQuestion);
-//     }
-//   };
+    const currentIndex = questions.indexOf(currentQuestion);
+    const newQuestion = questions[currentIndex + 1];
 
-//   // const { timeLeft, isIntervalActive, setTimeLeft, setIsIntervalActive } =
-//   //     useSubstractTime({
-//   //         initialTime: currentQuestion.lifetimeSeconds,
-//   //         timeReachZeroHandler: onSubmitHandler,
-//   //         dependenciesArray: [currentOptions],
-//   //     });
+    setCurrentQuestion(newQuestion);
+  };
 
-//   // Subtract time
-//   useEffect(() => {
-//     let interval: NodeJS.Timer | null = null;
-
-//     if (isIntervalActive) {
-//       setTimeLeft(currentQuestion.lifetimeSeconds);
-
-//       interval = setInterval(() => {
-//         setTimeLeft((prevTime) => {
-//           if (prevTime === 0) {
-//             /* If the user did not submit the answer to the current
-//                         question submit it when the time reaches 0 */
-//             onSubmitHandler();
-//             return prevTime;
-//           }
-
-//           const newTime = prevTime - 1 >= 0 ? prevTime - 1 : 0;
-//           return newTime;
-//         });
-//       }, 1000);
-//     } else {
-//       setTimeLeft(0);
-//     }
-
-//     return () => {
-//       if (interval) clearInterval(interval);
-//     };
-//   }, [currentQuestion, isIntervalActive]);
-
-//   return {
-//     timeLeft,
-//     setTimeLeft,
-//     setCurrentQuestion,
-//     setCurrentOptions,
-//     currentQuestion,
-//     currentOptions,
-//     isIntervalActive,
-//     setIsIntervalActive,
-//     seeResultsAvailable,
-//     setSeeResultsAvaiable,
-//     handleOptionButtonClick,
-//     getQuestionIndex,
-//     onSubmitHandler,
-//     buttonsState,
-//     buttonsRefs,
-//   };
-// };
+  return {
+    currentQuestion,
+    seeResultsAvailable,
+    buttons,
+    buttonRefs,
+    onSelectOptionHandler,
+    onSubmitHandler,
+  };
+};

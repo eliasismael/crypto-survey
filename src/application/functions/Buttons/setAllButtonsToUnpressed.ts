@@ -1,17 +1,17 @@
 import { IdToButton } from "../../../domain/models/Buttons";
 
 export const setAllButtonsToUnpressed = (
-  setter: React.Dispatch<React.SetStateAction<IdToButton>>
-): void => {
-  setter((prevState) => {
-    const buttonsUnpressed = Object.keys(prevState).reduce((acc, buttonKey) => {
-      acc[buttonKey as keyof typeof prevState] = {
-        ...prevState[buttonKey as keyof typeof prevState],
-        pressed: false,
-      };
-      return acc;
-    }, {} as typeof prevState);
+  set: React.Dispatch<React.SetStateAction<IdToButton>>
+) => {
+  set((prevState) => {
+    const entries = Object.entries(prevState);
+    const newEntries = entries.map(([key, value]) => [
+      key,
+      { ...value, pressed: false },
+    ]);
 
-    return buttonsUnpressed;
+    const newState = Object.fromEntries(newEntries);
+
+    return newState;
   });
 };
