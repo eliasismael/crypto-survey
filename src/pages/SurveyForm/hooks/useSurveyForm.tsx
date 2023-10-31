@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { ButtonRefs } from "../../../domain/models/Buttons";
 
 // Data
-import { questions } from "../../../infrastructure/api/apiConsumer";
+import { questions } from "../../../infrastructure/connections/api/apiConsumer";
 // Functions
 import { createButtons } from "../../../application/functions/Buttons/createButtons";
 import { getButtonsRefs } from "../../../application/functions/Buttons/getButtonsRefs";
@@ -42,10 +42,10 @@ export const useSurveyForm = (user: IUser) => {
     setAllButtonsToUnpressed(setButtons);
     registerAnswerID(user, buttonRefs);
 
-    const isLastQuestions =
+    const isLastQuestion =
       questions.indexOf(currentQuestion) === questions.length - 1;
 
-    if (isLastQuestions) {
+    if (isLastQuestion) {
       setSeeResultsAvaiable(true);
       return;
     }

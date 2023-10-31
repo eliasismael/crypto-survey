@@ -1,12 +1,10 @@
-// Libraries
+// UI
 import { Container, Typography, Grid } from "@mui/material";
 // Data
-import { surveyData } from "../../../infrastructure/api/apiConsumer";
-
-// Styles
-// import "../styles/HomePage.css";
-
+import { surveyData } from "../../../infrastructure/connections/api/apiConsumer";
+// Hooks
 import { useHomePage } from "../hooks/useHomePage";
+// Components
 import { StartButton } from "../components/StartButton";
 import { ConnectButton } from "../components/ConnectButton";
 import { SwitchToGoerliButton } from "../components/SwitchToGoerliButton";

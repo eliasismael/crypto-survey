@@ -1,5 +1,4 @@
 import { IUser } from "../../../domain/models/User";
-import { ButtonRefs } from "../../../domain/models/Buttons";
 
 export const registerAnswerID = (
   user: IUser,

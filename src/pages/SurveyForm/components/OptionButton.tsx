@@ -6,6 +6,7 @@ interface OptionButtonProps {
   color: "primary" | "secondary";
   onClickHandler: () => void;
   dataAnswerId: number;
+  disabled: boolean;
   buttonRef:
     | ((instance: HTMLButtonElement | null) => void)
     | React.RefObject<HTMLButtonElement>
@@ -14,7 +15,8 @@ interface OptionButtonProps {
 }
 
 export const OptionButton: React.FC<OptionButtonProps> = (props) => {
-  const { content, color, onClickHandler, dataAnswerId, buttonRef } = props;
+  const { content, color, onClickHandler, dataAnswerId, disabled, buttonRef } =
+    props;
 
   return (
     <Button
@@ -22,6 +24,7 @@ export const OptionButton: React.FC<OptionButtonProps> = (props) => {
       color={color}
       onClick={onClickHandler}
       data-answerid={dataAnswerId}
+      disabled={disabled}
       ref={buttonRef}
     >
       {content}

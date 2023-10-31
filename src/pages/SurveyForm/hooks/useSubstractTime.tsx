@@ -4,28 +4,37 @@ export const useSubstractTime = (
   initialTime: number,
   intervalTime: number,
   timeoutHandler: Function,
-  dependencies: any[]
+  dependencies: any[],
+  stopTime: boolean[]
 ) => {
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(initialTime);
+
+  let interval: NodeJS.Timer;
 
   useEffect(() => {
-    setTimeLeft(initialTime);
+    const isCounterActive = stopTime.every((element) => !element);
 
-    const getNewTime = (prevTime: number) => {
-      if (prevTime === 0) {
-        timeoutHandler();
-        return prevTime;
-      }
+    if (isCounterActive) {
+      setTimeLeft(initialTime);
 
-      return prevTime - 1;
+      const getNewTime = (prevTime: number) => {
+        if (prevTime === 0) {
+          timeoutHandler();
+          return prevTime;
+        }
+
+        return prevTime - 1;
+      };
+
+      interval = setInterval(() => {
+        setTimeLeft((prevTime) => getNewTime(prevTime));
+      }, intervalTime);
+    }
+
+    return () => {
+      clearInterval(interval);
     };
-
-    let interval = setInterval(() => {
-      setTimeLeft((prevTime) => getNewTime(prevTime));
-    }, intervalTime);
-
-    return () => clearInterval(interval);
-  }, [...dependencies]);
+  }, [...dependencies, ...stopTime]);
 
   return timeLeft;
 };

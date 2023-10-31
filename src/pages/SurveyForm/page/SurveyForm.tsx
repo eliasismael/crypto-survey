@@ -1,6 +1,7 @@
 // Hooks
 import { useSurveyForm } from "../hooks/useSurveyForm";
 import { useSubstractTime } from "../hooks/useSubstractTime";
+import { useEffect } from "react";
 // UI
 import {
   Box,
@@ -13,7 +14,7 @@ import {
 // Router
 import { Link } from "react-router-dom";
 // Data from API
-import { questions } from "../../../infrastructure/api/apiConsumer";
+import { questions } from "../../../infrastructure/connections/api/apiConsumer";
 // Models
 import { IUser } from "../../../domain/models/User";
 // Components
@@ -37,7 +38,8 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
     currentQuestion.lifetimeSeconds,
     1000,
     () => onSubmitHandler(),
-    [currentQuestion]
+    [currentQuestion],
+    [seeResultsAvailable]
   );
 
   return (
@@ -105,6 +107,7 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
               buttonRef={(button) =>
                 (buttonRefs.current[currentButton] = button)
               }
+              disabled={seeResultsAvailable}
             />
           );
         })}

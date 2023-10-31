@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useWalletContext } from "../../../infrastructure/connections/wallet/context/walletContext";
 import { useContractContext } from "../../../infrastructure/connections/contract/hooks/useContractContext";
 // Data
-import { surveyData } from "../../../infrastructure/api/apiConsumer";
-import { questions } from "../../../infrastructure/api/apiConsumer";
+import { surveyData } from "../../../infrastructure/connections/api/apiConsumer";
+import { questions } from "../../../infrastructure/connections/api/apiConsumer";
 // Functions
 import { submitAnswers } from "../../../application/functions/contract/submitAnswers";
 // Models
