@@ -7,8 +7,6 @@ export interface Button {
   answerID: number;
 }
 
-export interface ButtonsRef {
-  button1: null | HTMLButtonElement;
-  button2: null | HTMLButtonElement;
-  button3: null | HTMLButtonElement;
+export interface ButtonRefs {
+  [key: string]: HTMLButtonElement | null;
 }

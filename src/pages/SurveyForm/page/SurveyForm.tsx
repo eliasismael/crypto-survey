@@ -17,13 +17,15 @@ import { questions } from "../../../infrastructure/api/apiConsumer";
 import { registerAnswerID } from "../../../application/functions/Buttons/registerAnswerID";
 import { setAllButtonsToUnpressed } from "../../../application/functions/Buttons/setAllButtonsToUnpressed";
 // Types and instances
-import { IdToButton, ButtonsRef } from "../../../domain/models/Buttons";
+import { ButtonRefs } from "../../../domain/models/Buttons";
 // import { buttons } from "../../../application/functions/Buttons/getInitialStateButtons";
 // Type for props
 import { IUser } from "../../../domain/models/User";
 // Helpers
 import { getIndex } from "../../../application/helpers/getIndex";
 import { createButtons } from "../../../application/functions/Buttons/createButtons";
+
+import { getButtonsRefs } from "../../../application/functions/Buttons/getButtonsRefs";
 
 interface SurveyFormProps {
   user: IUser;
@@ -35,17 +37,16 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
   const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
   const [seeResultsAvailable, setSeeResultsAvaiable] = useState(false);
 
-  // Button state (pressed and what response it contains)
-  // const [buttonsState, setButtonsState] = useState<IdToButton>(buttons);
-
-  const [buttonsCreated, setButtonsCreated] = useState(() => createButtons(3));
+  const [buttons, setButtons] = useState(() => createButtons(3));
 
   // To determine which one was pressed
-  const buttonsRefs = useRef<ButtonsRef>({
-    button1: null,
-    button2: null,
-    button3: null,
-  });
+  // const buttonsRefs = useRef<ButtonsRef>({
+  //   button1: null,
+  //   button2: null,
+  //   button3: null,
+  // });
+
+  const buttonsRefs = useRef<ButtonRefs>(getButtonsRefs(buttons));
 
   // useSubstractTime
   const timeLeft = useSubstractTime(
@@ -55,15 +56,20 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
     [currentQuestion]
   );
 
-  const handleOptionButtonClick = (buttonID: string) => {
+  const handleOptionButtonClick = (
+    buttonID: string,
+    answerid: string | number
+  ) => {
+    console.log(buttonID);
+    console.log(answerid);
     // To uncheck the other one that can be selected before
-    setAllButtonsToUnpressed(setButtonsCreated);
+    setAllButtonsToUnpressed(setButtons);
 
     // Mark the button as pressed
-    setButtonsCreated((prevState) => ({
+    setButtons((prevState) => ({
       ...prevState,
       [buttonID]: {
-        ...prevState[buttonID as keyof typeof buttonsCreated],
+        ...prevState[buttonID as keyof typeof buttons],
         pressed: true,
       },
     }));
@@ -75,7 +81,7 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
          automatically when the time is up if the user doesn't */
     evt?.preventDefault();
 
-    setAllButtonsToUnpressed(setButtonsCreated);
+    setAllButtonsToUnpressed(setButtons);
     registerAnswerID(user, buttonsRefs);
 
     const isLastQuestions =
@@ -90,7 +96,7 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
     }
   };
 
-  useEffect(() => console.log(buttonsCreated), []);
+  useEffect(() => console.log(buttons), []);
   return (
     <Box
       sx={{
@@ -149,16 +155,16 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
             key={option.id}
             variant="outlined"
             color={
-              buttonsCreated[`button${index + 1}`].pressed
-                ? "secondary"
-                : "primary"
+              buttons[`button${index + 1}`].pressed ? "secondary" : "primary"
             }
-            onClick={() => handleOptionButtonClick(`button${index + 1}`)}
+            onClick={() =>
+              handleOptionButtonClick(`button${index + 1}`, option.id)
+            }
             data-answerid={option.id}
-            ref={(button) =>
-              (buttonsRefs.current[`button${index + 1}` as keyof ButtonsRef] =
-                button)
-            }
+            ref={(button) => {
+              const buttonId = `button${index + 1}`;
+              return (buttonsRefs.current[buttonId] = button);
+            }}
           >
             {option.text}
           </Button>
