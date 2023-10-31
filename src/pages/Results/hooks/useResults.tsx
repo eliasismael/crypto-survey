@@ -12,45 +12,46 @@ import { submitAnswers } from "../../../application/use-cases/contract/submitAns
 import { IUser } from "../../../domain/models/User";
 
 export const useResults = (user: IUser) => {
-    // Context
-    const { currentAccount } = useWalletContext();
-    const { contract } = useContractContext();
+  // Context
+  const { currentAccount } = useWalletContext();
+  const { contract } = useContractContext();
 
-    // States
-    const [resultsSubmitted, setResultsSubmitted] = useState(false);
-    const [answers, setAnswers] = useState<string[]>([]);
-    const [answersID, setAnswersID] = useState<number[]>([]);
+  // States
+  const [resultsSubmitted, setResultsSubmitted] = useState(false);
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [answersID, setAnswersID] = useState<number[]>([]);
 
-    // Functions
-    const handleAnswersSubmit = async () => {
-        try {
-            const surveyID = surveyData.id;
-            if (!contract) return;
+  // Functions
+  const handleAnswersSubmit = async () => {
+    try {
+      const surveyID = surveyData.id;
+      if (!contract) return;
 
-            await submitAnswers({
-                contract: contract,
-                surveyId: surveyID,
-                surveyAnswers: answersID,
-            });
+      await submitAnswers({
+        contract: contract,
+        surveyId: surveyID,
+        surveyAnswers: answersID,
+      });
 
-            setResultsSubmitted(true);
-        } catch (error) {
-            alert(error);
-        }
-    };
+      setResultsSubmitted(true);
+    } catch (error) {
+      alert(error);
+    }
+  };
 
-    // Get answers selected
-    useEffect(() => {
-        const answersID: number[] = user.seeAnswersID();
-        const answersSelected = answersID.map((answerID, index) => {
-            const options = questions[index].options;
-            const option = options.find((option) => option.id === answerID);
-            return option?.text || "Not answered";
-        });
+  // Get answers selected
+  useEffect(() => {
+    const answersID: number[] = user.seeAnswersID();
+    const answersSelected = answersID.map((answerID, index) => {
+      const options = questions[index].options;
+      const option = options.find((option) => option.id === answerID);
 
-        setAnswersID(answersID);
-        setAnswers(answersSelected);
-    }, []);
+      return option?.text || "Not answered";
+    });
 
-    return { currentAccount, resultsSubmitted, answers, handleAnswersSubmit };
+    setAnswersID(answersID);
+    setAnswers(answersSelected);
+  }, []);
+
+  return { currentAccount, resultsSubmitted, answers, handleAnswersSubmit };
 };

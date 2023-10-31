@@ -1,45 +1,33 @@
-// import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-// interface UseSubstractTime {
-//     initialTime: number;
-//     timeReachZeroHandler: Function;
-//     dependenciesArray: any[];
-// }
+interface UseSubstractTime {
+  initialTime: number;
+  timeoutHandler: Function;
+  dependencies: any[];
+}
 
-// export const useSubstractTime = (args: UseSubstractTime) => {
-//     const { initialTime, timeReachZeroHandler, dependenciesArray } = args;
+export const useSubstractTime = (args: UseSubstractTime) => {
+  const { initialTime, timeoutHandler, dependencies } = args;
+  const [timeLeft, setTimeLeft] = useState(0);
 
-//     const [timeLeft, setTimeLeft] = useState(0);
-//     const [isIntervalActive, setIsIntervalActive] = useState(true);
+  useEffect(() => {
+    setTimeLeft(initialTime);
 
-//     useEffect(() => {
-//         let interval: NodeJS.Timer | null = null;
+    const getNewTime = (prevTime: number) => {
+      if (prevTime === 0) {
+        timeoutHandler();
+        return prevTime;
+      }
 
-//         if (isIntervalActive) {
-//             setTimeLeft(initialTime);
+      return prevTime - 1;
+    };
 
-//             interval = setInterval(() => {
-//                 setTimeLeft((prevTime) => {
-//                     if (prevTime === 0) {
-//                         /* If the user did not submit the answer to the current
-//                         question submit it when the time reaches 0 */
-//                         // onSubmitHandler();
-//                         timeReachZeroHandler();
-//                         return prevTime;
-//                     }
+    let interval: NodeJS.Timer = setInterval(() => {
+      setTimeLeft((prevTime) => getNewTime(prevTime));
+    }, 1000);
 
-//                     const newTime = prevTime - 1 >= 0 ? prevTime - 1 : 0;
-//                     return newTime;
-//                 });
-//             }, 1000);
-//         } else {
-//             setTimeLeft(0);
-//         }
+    return () => clearInterval(interval);
+  }, [...dependencies]);
 
-//         return () => {
-//             if (interval) clearInterval(interval);
-//         };
-//     }, [...dependenciesArray, isIntervalActive]);
-
-//     return { timeLeft, isIntervalActive, setTimeLeft, setIsIntervalActive };
-// };
+  return { timeLeft };
+};
