@@ -7,7 +7,7 @@ import { useContractContext } from "../../../infrastructure/connections/contract
 import { surveyData } from "../../../infrastructure/api/apiConsumer";
 import { questions } from "../../../infrastructure/api/apiConsumer";
 // Functions
-import { submitAnswers } from "../../../application/use-cases/contract/submitAnswers";
+import { submitAnswers } from "../../../application/functions/contract/submitAnswers";
 // Models
 import { IUser } from "../../../domain/models/User";
 

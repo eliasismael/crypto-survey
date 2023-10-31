@@ -1,7 +1,7 @@
-import { Buttons } from "../../../domain/models/Buttons";
+import { IdToButton } from "../../../domain/models/Buttons";
 
 export const setAllButtonsToUnpressed = (
-  setter: React.Dispatch<React.SetStateAction<Buttons>>
+  setter: React.Dispatch<React.SetStateAction<IdToButton>>
 ): void => {
   setter((prevState) => {
     const buttonsUnpressed = Object.keys(prevState).reduce((acc, buttonKey) => {

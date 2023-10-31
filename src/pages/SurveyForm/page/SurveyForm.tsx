@@ -1,5 +1,6 @@
 // Hooks
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useSubstractTime } from "../hooks/useSubstractTime";
 // Library
 import {
   Box,
@@ -13,17 +14,17 @@ import { Link } from "react-router-dom";
 // Data from API
 import { questions } from "../../../infrastructure/api/apiConsumer";
 // Functions
-import { registerAnswerID } from "../../../application/use-cases/Buttons/registerAnswerID";
-import { setAllButtonsToUnpressed } from "../../../application/use-cases/Buttons/setAllButtonsToUnpressed";
+import { registerAnswerID } from "../../../application/functions/Buttons/registerAnswerID";
+import { setAllButtonsToUnpressed } from "../../../application/functions/Buttons/setAllButtonsToUnpressed";
 // Types and instances
-import { Buttons, ButtonsRef } from "../../../domain/models/Buttons";
-import { buttons } from "../../../application/use-cases/Buttons/getInitialStateButtons";
+import { IdToButton, ButtonsRef } from "../../../domain/models/Buttons";
+// import { buttons } from "../../../application/functions/Buttons/getInitialStateButtons";
 // Type for props
 import { IUser } from "../../../domain/models/User";
-// import { useSurveyForm } from "../hooks/useSurveyForm";
-
+// Helpers
 import { getIndex } from "../../../application/helpers/getIndex";
-import { useSubstractTime } from "../hooks/useSubstractTime";
+import { createButtons } from "../../../application/functions/Buttons/createButtons";
+
 interface SurveyFormProps {
   user: IUser;
 }
@@ -35,7 +36,9 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
   const [seeResultsAvailable, setSeeResultsAvaiable] = useState(false);
 
   // Button state (pressed and what response it contains)
-  const [buttonsState, setButtonsState] = useState<Buttons>(buttons);
+  // const [buttonsState, setButtonsState] = useState<IdToButton>(buttons);
+
+  const [buttonsCreated, setButtonsCreated] = useState(() => createButtons(3));
 
   // To determine which one was pressed
   const buttonsRefs = useRef<ButtonsRef>({
@@ -44,15 +47,23 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
     button3: null,
   });
 
+  // useSubstractTime
+  const timeLeft = useSubstractTime(
+    currentQuestion.lifetimeSeconds,
+    1000,
+    () => onSubmitHandler(),
+    [currentQuestion]
+  );
+
   const handleOptionButtonClick = (buttonID: string) => {
     // To uncheck the other one that can be selected before
-    setAllButtonsToUnpressed(setButtonsState);
+    setAllButtonsToUnpressed(setButtonsCreated);
 
     // Mark the button as pressed
-    setButtonsState((prevState) => ({
+    setButtonsCreated((prevState) => ({
       ...prevState,
       [buttonID]: {
-        ...prevState[buttonID as keyof typeof buttonsState],
+        ...prevState[buttonID as keyof typeof buttonsCreated],
         pressed: true,
       },
     }));
@@ -64,7 +75,7 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
          automatically when the time is up if the user doesn't */
     evt?.preventDefault();
 
-    setAllButtonsToUnpressed(setButtonsState);
+    setAllButtonsToUnpressed(setButtonsCreated);
     registerAnswerID(user, buttonsRefs);
 
     const isLastQuestions =
@@ -73,18 +84,13 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
     if (isLastQuestions) {
       setSeeResultsAvaiable(true);
     } else {
-      const currentQuestionIndex = getIndex(questions, currentQuestion);
-      const nextQuestion = questions[currentQuestionIndex + 1];
-      setCurrentQuestion(nextQuestion);
+      const currentIndex = getIndex(questions, currentQuestion);
+      const newQuestion = questions[currentIndex + 1];
+      setCurrentQuestion(newQuestion);
     }
   };
 
-  const { timeLeft } = useSubstractTime({
-    initialTime: currentQuestion.lifetimeSeconds,
-    timeoutHandler: onSubmitHandler,
-    dependencies: [currentQuestion],
-  });
-
+  useEffect(() => console.log(buttonsCreated), []);
   return (
     <Box
       sx={{
@@ -143,7 +149,9 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
             key={option.id}
             variant="outlined"
             color={
-              buttons[`button${index + 1}`].pressed ? "secondary" : "primary"
+              buttonsCreated[`button${index + 1}`].pressed
+                ? "secondary"
+                : "primary"
             }
             onClick={() => handleOptionButtonClick(`button${index + 1}`)}
             data-answerid={option.id}

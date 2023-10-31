@@ -1,4 +1,4 @@
-export interface Buttons {
+export interface IdToButton {
   [key: string]: Button;
 }
 
@@ -12,7 +12,3 @@ export interface ButtonsRef {
   button2: null | HTMLButtonElement;
   button3: null | HTMLButtonElement;
 }
-
-export type GetButtons = {
-  (): Buttons;
-};

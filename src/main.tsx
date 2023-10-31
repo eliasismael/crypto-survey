@@ -7,11 +7,11 @@ import { WalletConnectionProvider } from "./infrastructure/connections/wallet/co
 import { ContractContextProvider } from "./infrastructure/connections/contract/context/contractContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-    <React.StrictMode>
-        <WalletConnectionProvider>
-            <ContractContextProvider>
-                <App />
-            </ContractContextProvider>
-        </WalletConnectionProvider>
-    </React.StrictMode>
+  <React.StrictMode>
+    <WalletConnectionProvider>
+      <ContractContextProvider>
+        <App />
+      </ContractContextProvider>
+    </WalletConnectionProvider>
+  </React.StrictMode>
 );

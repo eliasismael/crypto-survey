@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 
-interface UseSubstractTime {
-  initialTime: number;
-  timeoutHandler: Function;
-  dependencies: any[];
-}
-
-export const useSubstractTime = (args: UseSubstractTime) => {
-  const { initialTime, timeoutHandler, dependencies } = args;
+export const useSubstractTime = (
+  initialTime: number,
+  intervalTime: number,
+  timeoutHandler: Function,
+  dependencies: any[]
+) => {
   const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
@@ -22,12 +20,12 @@ export const useSubstractTime = (args: UseSubstractTime) => {
       return prevTime - 1;
     };
 
-    let interval: NodeJS.Timer = setInterval(() => {
+    let interval = setInterval(() => {
       setTimeLeft((prevTime) => getNewTime(prevTime));
-    }, 1000);
+    }, intervalTime);
 
     return () => clearInterval(interval);
   }, [...dependencies]);
 
-  return { timeLeft };
+  return timeLeft;
 };
