@@ -1,4 +1,4 @@
-# challenge-ratherlabs
+# Crypto Survey App
 
 This is a survey application developed using TypeScript and React, which connects to Metamask and a contract on the Goerli network using ethers.js. The application consists of three main pages: "Homepage," "SurveyForm," and "Results," and users can navigate between them using react-router-dom. The application also utilizes axios to make API calls to myJson, where the data is stored.
 
